@@ -33,6 +33,23 @@ const getMyCharacters = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json(characters);
 });
 
+const getCharacterById = asyncHandler(async (req: Request, res: Response) => {
+  const character = await Character.findById(req.params.id);
+
+  if (!character) {
+    res.status(404);
+    throw new Error("Character not found");
+  }
+
+  // Security Check: Make sure the character belongs to the logged-in user
+  if (character.user.toString() !== req.user!._id) {
+    res.status(401);
+    throw new Error("Not authorized to access this character");
+  }
+
+  res.status(200).json(character);
+});
+
 // We'll add getById, update, and delete in a future step to keep this one focused.
 
-export { createCharacter, getMyCharacters };
+export { createCharacter, getMyCharacters, getCharacterById };
