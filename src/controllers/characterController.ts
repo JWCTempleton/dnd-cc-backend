@@ -50,6 +50,25 @@ const getCharacterById = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json(character);
 });
 
-// We'll add getById, update, and delete in a future step to keep this one focused.
+const deleteCharacter = asyncHandler(async (req: Request, res: Response) => {
+  const character = await Character.findById(req.params.id);
 
-export { createCharacter, getMyCharacters, getCharacterById };
+  if (!character) {
+    res.status(404);
+    throw new Error("Character not found");
+  }
+
+  // Security Check: Ensure the user owns this character
+  if (character.user.toString() !== req.user!._id) {
+    res.status(401);
+    throw new Error("Not authorized to delete this character");
+  }
+
+  await character.deleteOne();
+
+  res.status(200).json({ message: "Character deleted successfully" });
+});
+
+// We'll add getById, update, in a future step to keep this one focused.
+
+export { createCharacter, getMyCharacters, getCharacterById, deleteCharacter };

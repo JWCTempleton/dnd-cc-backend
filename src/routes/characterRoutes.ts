@@ -4,6 +4,7 @@ import {
   createCharacter,
   getMyCharacters,
   getCharacterById,
+  deleteCharacter,
 } from "../controllers/characterController";
 import { protect } from "../middleware/authMiddleware";
 
@@ -12,6 +13,9 @@ const router = express.Router();
 // Chain requests for the same route together
 router.route("/").post(protect, createCharacter).get(protect, getMyCharacters);
 
-router.route("/:id").get(protect, getCharacterById);
+router
+  .route("/:id")
+  .get(protect, getCharacterById)
+  .delete(protect, deleteCharacter);
 
 export default router;
