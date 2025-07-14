@@ -1,31 +1,34 @@
-// src/server.ts
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db";
+import userRoutes from "./routes/userRoutes";
+import { notFound, errorHandler } from "./middleware/errorMiddleware";
 
-// Load environment variables
 dotenv.config();
-
-// Connect to database
 connectDB();
 
 const app = express();
 
-// Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow our frontend to connect
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
-app.use(express.json()); // Allows us to accept JSON in request bodies
+app.use(express.json());
 
-// A simple test route
+// Main Routes
+app.use("/api/users", userRoutes);
+
+// Test Route
 app.get("/api/test", (req, res) => {
   res.json({ message: "Hello from the backend!" });
 });
 
-const PORT = process.env.PORT || 5001;
+// Error Handling Middleware (should be last)
+app.use(notFound);
+app.use(errorHandler);
 
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
