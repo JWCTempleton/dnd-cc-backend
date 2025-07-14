@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes";
+import characterRoutes from "./routes/characterRoutes";
 import { notFound, errorHandler } from "./middleware/errorMiddleware";
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(cookieParser());
 
 // Main Routes
 app.use("/api/users", userRoutes);
+app.use("/api/characters", characterRoutes);
 
 // Test Route
 app.get("/api/test", (req, res) => {
