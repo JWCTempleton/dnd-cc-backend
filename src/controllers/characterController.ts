@@ -3,16 +3,41 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import Character from "../models/characterModel";
 
+const calculateModifier = (score: number) => Math.floor((score - 10) / 2);
+
 // @desc    Create a new character
 // @route   POST /api/characters
 // @access  Private
 const createCharacter = asyncHandler(async (req: Request, res: Response) => {
-  const { name, race, characterClass, stats, proficiencies, spells } = req.body;
+  const {
+    name,
+    race,
+    characterClass,
+    stats,
+    proficiencies,
+    spells,
+    background,
+    alignment,
+    hitDie,
+  } = req.body;
 
-  if (!name || !race || !characterClass) {
+  if (
+    !name ||
+    !race ||
+    !characterClass ||
+    !background ||
+    !alignment ||
+    !stats ||
+    !hitDie
+  ) {
     res.status(400);
-    throw new Error("Please provide name, race, and class for the character");
+    throw new Error(
+      "Please provide all required character fields: name, race, class, background, alignment, and stats."
+    );
   }
+
+  const conModifier = calculateModifier(stats.constitution);
+  const startingHp = hitDie + conModifier;
 
   const character = await Character.create({
     user: req.user!._id, // req.user is guaranteed to exist by the 'protect' middleware
@@ -22,6 +47,10 @@ const createCharacter = asyncHandler(async (req: Request, res: Response) => {
     stats,
     proficiencies,
     spells,
+    background,
+    alignment,
+    level: 1,
+    maxHp: startingHp,
   });
 
   res.status(201).json(character);
@@ -72,7 +101,6 @@ const deleteCharacter = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const updateCharacter = asyncHandler(async (req: Request, res: Response) => {
-  const { name, race, characterClass, stats, proficiencies, spells } = req.body;
   const character = await Character.findById(req.params.id);
 
   if (!character) {
@@ -80,24 +108,48 @@ const updateCharacter = asyncHandler(async (req: Request, res: Response) => {
     throw new Error("Character not found");
   }
 
-  // Security Check
   if (character.user.toString() !== req.user!._id) {
     res.status(401);
     throw new Error("Not authorized to update this character");
   }
 
-  character.name = name || character.name;
-  character.race = race || character.race;
-  character.characterClass = characterClass || character.characterClass;
-  character.stats = stats || character.stats;
-  character.proficiencies = proficiencies || character.proficiencies;
-  character.spells = spells || character.spells;
+  // Use a more robust check to allow for "falsy" values like "" or 0
+  character.name = req.body.name ?? character.name;
+  character.race = req.body.race ?? character.race;
+  character.characterClass =
+    req.body.characterClass ?? character.characterClass;
+  character.stats = req.body.stats ?? character.stats;
+  character.proficiencies = req.body.proficiencies ?? character.proficiencies;
+  character.spells = req.body.spells ?? character.spells;
+  character.background = req.body.background ?? character.background;
+  character.alignment = req.body.alignment ?? character.alignment;
 
   const updatedCharacter = await character.save();
   res.status(200).json(updatedCharacter);
 });
 
-// We'll add getById, update, in a future step to keep this one focused.
+const levelUpCharacter = asyncHandler(async (req: Request, res: Response) => {
+  const { hpRoll } = req.body; // The new HP roll from the frontend
+  const character = await Character.findById(req.params.id);
+
+  if (!character || character.user.toString() !== req.user!._id) {
+    res.status(404);
+    throw new Error("Character not found or not authorized");
+  }
+  if (character.level >= 20) {
+    res.status(400);
+    throw new Error("Character is already at max level");
+  }
+
+  const conModifier = calculateModifier(character.stats.constitution);
+  const hpGain = hpRoll + conModifier;
+
+  character.level += 1;
+  character.maxHp += hpGain;
+
+  const updatedCharacter = await character.save();
+  res.status(200).json(updatedCharacter);
+});
 
 export {
   createCharacter,
@@ -105,4 +157,5 @@ export {
   getCharacterById,
   deleteCharacter,
   updateCharacter,
+  levelUpCharacter,
 };

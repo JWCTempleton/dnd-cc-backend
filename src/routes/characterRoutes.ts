@@ -6,6 +6,7 @@ import {
   getCharacterById,
   deleteCharacter,
   updateCharacter,
+  levelUpCharacter,
 } from "../controllers/characterController";
 import { protect } from "../middleware/authMiddleware";
 
@@ -19,5 +20,7 @@ router
   .get(protect, getCharacterById)
   .put(protect, updateCharacter)
   .delete(protect, deleteCharacter);
+
+router.route("/:id/levelup").post(protect, levelUpCharacter);
 
 export default router;

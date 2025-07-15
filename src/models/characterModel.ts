@@ -17,6 +17,10 @@ interface ICharacter {
   };
   proficiencies: string[];
   spells: string[];
+  background: string;
+  alignment: string;
+  level: number;
+  maxHp: number;
 }
 
 interface ICharacterDocument extends ICharacter, Document {
@@ -59,6 +63,10 @@ const characterSchema = new mongoose.Schema<
     },
     proficiencies: { type: [String], default: [] },
     spells: { type: [String], default: [] },
+    background: { type: String, required: true },
+    alignment: { type: String, required: true },
+    level: { type: Number, default: 1 },
+    maxHp: { type: Number, default: 10 },
   },
   {
     timestamps: true,
