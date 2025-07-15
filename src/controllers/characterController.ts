@@ -7,7 +7,7 @@ import Character from "../models/characterModel";
 // @route   POST /api/characters
 // @access  Private
 const createCharacter = asyncHandler(async (req: Request, res: Response) => {
-  const { name, race, characterClass, stats } = req.body;
+  const { name, race, characterClass, stats, proficiencies, spells } = req.body;
 
   if (!name || !race || !characterClass) {
     res.status(400);
@@ -20,6 +20,8 @@ const createCharacter = asyncHandler(async (req: Request, res: Response) => {
     race,
     characterClass,
     stats,
+    proficiencies,
+    spells,
   });
 
   res.status(201).json(character);
@@ -70,7 +72,7 @@ const deleteCharacter = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const updateCharacter = asyncHandler(async (req: Request, res: Response) => {
-  const { name, race, characterClass, stats } = req.body;
+  const { name, race, characterClass, stats, proficiencies, spells } = req.body;
   const character = await Character.findById(req.params.id);
 
   if (!character) {
@@ -88,6 +90,8 @@ const updateCharacter = asyncHandler(async (req: Request, res: Response) => {
   character.race = race || character.race;
   character.characterClass = characterClass || character.characterClass;
   character.stats = stats || character.stats;
+  character.proficiencies = proficiencies || character.proficiencies;
+  character.spells = spells || character.spells;
 
   const updatedCharacter = await character.save();
   res.status(200).json(updatedCharacter);

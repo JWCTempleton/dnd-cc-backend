@@ -15,6 +15,8 @@ interface ICharacter {
     wisdom: number;
     charisma: number;
   };
+  proficiencies: string[];
+  spells: string[];
 }
 
 interface ICharacterDocument extends ICharacter, Document {
@@ -55,6 +57,8 @@ const characterSchema = new mongoose.Schema<
       wisdom: { type: Number, default: 10 },
       charisma: { type: Number, default: 10 },
     },
+    proficiencies: { type: [String], default: [] },
+    spells: { type: [String], default: [] },
   },
   {
     timestamps: true,
