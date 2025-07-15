@@ -69,6 +69,36 @@ const deleteCharacter = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json({ message: "Character deleted successfully" });
 });
 
+const updateCharacter = asyncHandler(async (req: Request, res: Response) => {
+  const { name, race, characterClass, stats } = req.body;
+  const character = await Character.findById(req.params.id);
+
+  if (!character) {
+    res.status(404);
+    throw new Error("Character not found");
+  }
+
+  // Security Check
+  if (character.user.toString() !== req.user!._id) {
+    res.status(401);
+    throw new Error("Not authorized to update this character");
+  }
+
+  character.name = name || character.name;
+  character.race = race || character.race;
+  character.characterClass = characterClass || character.characterClass;
+  character.stats = stats || character.stats;
+
+  const updatedCharacter = await character.save();
+  res.status(200).json(updatedCharacter);
+});
+
 // We'll add getById, update, in a future step to keep this one focused.
 
-export { createCharacter, getMyCharacters, getCharacterById, deleteCharacter };
+export {
+  createCharacter,
+  getMyCharacters,
+  getCharacterById,
+  deleteCharacter,
+  updateCharacter,
+};

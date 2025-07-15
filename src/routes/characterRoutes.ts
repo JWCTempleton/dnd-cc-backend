@@ -5,6 +5,7 @@ import {
   getMyCharacters,
   getCharacterById,
   deleteCharacter,
+  updateCharacter,
 } from "../controllers/characterController";
 import { protect } from "../middleware/authMiddleware";
 
@@ -16,6 +17,7 @@ router.route("/").post(protect, createCharacter).get(protect, getMyCharacters);
 router
   .route("/:id")
   .get(protect, getCharacterById)
+  .put(protect, updateCharacter)
   .delete(protect, deleteCharacter);
 
 export default router;
