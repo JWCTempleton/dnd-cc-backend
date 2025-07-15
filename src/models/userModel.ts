@@ -16,7 +16,7 @@ interface IUserMethods {
 
 // Interface for the Mongoose document, combining the data, methods, and Mongoose's Document type
 interface IUserDocument extends IUser, IUserMethods, Document {
-  _id: Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
 }
 // Interface for the Mongoose model (for static methods, if any)
 type IUserModel = Model<IUserDocument>;

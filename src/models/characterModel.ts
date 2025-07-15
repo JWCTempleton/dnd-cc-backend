@@ -1,12 +1,12 @@
 // src/models/characterModel.ts
-import mongoose, { Document, Model, Types } from "mongoose";
+import mongoose, { Document, Model } from "mongoose"; // <-- FIX #1: Removed 'Types'
 
 // --- TYPE DEFINITIONS ---
 interface ICharacter {
-  user: Types.ObjectId; // Reference to the User who owns this character
+  user: mongoose.Types.ObjectId; // <-- FIX #2: Changed to mongoose.Types
   name: string;
-  race: string; // Storing the 'index' from the D&D API, e.g., "elf"
-  characterClass: string; // Using "characterClass" to avoid conflict with JS 'class' keyword
+  race: string;
+  characterClass: string;
   stats: {
     strength: number;
     dexterity: number;
@@ -24,7 +24,7 @@ interface ICharacter {
 }
 
 interface ICharacterDocument extends ICharacter, Document {
-  _id: Types.ObjectId;
+  _id: mongoose.Types.ObjectId; // <-- FIX #3: Changed to mongoose.Types
 }
 
 type ICharacterModel = Model<ICharacterDocument>;
@@ -38,7 +38,7 @@ const characterSchema = new mongoose.Schema<
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "User", // This creates the link to the User model
+      ref: "User",
     },
     name: {
       type: String,
