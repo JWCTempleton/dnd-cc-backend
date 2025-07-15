@@ -1,6 +1,6 @@
 # D&D Character Creator - Backend API
 
-This repository contains the source code for the RESTful API that powers the D&D Character Creator application. It is a robust, secure, and scalable backend built with Node.js, Express, and MongoDB, using TypeScript for enhanced type safety and developer experience.
+This repository contains the source code for the RESTful API that powers the D&D Character Creator application. It is a secure and scalable backend built with Node.js, Express, and MongoDB, using TypeScript for enhanced type safety.
 
 ## Key Features
 
