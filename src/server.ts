@@ -14,7 +14,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://your-dnd-app.vercel.app",
+    origin: "https://dnd-character-creator-iota.vercel.app",
     credentials: true,
   })
 );
